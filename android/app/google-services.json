@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "752882152849",
+    "project_id": "focusmate-9e315",
+    "storage_bucket": "focusmate-9e315.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:752882152849:android:141b779dab53a62851d630",
+        "android_client_info": {
+          "package_name": "com.example.focusmate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "752882152849-gpfg3glklqsukevhi70ehe96d6ec8krd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhybHlJlV5zdfGnrFCeJm7GXBYch12XTc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "752882152849-gpfg3glklqsukevhi70ehe96d6ec8krd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "752882152849-8582r6i8h7iva6e27nrlhql47bkps1jq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.focusmate"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
