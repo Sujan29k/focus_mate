@@ -3,6 +3,7 @@ import 'focus_timer.dart';
 import 'analytics_screen.dart';
 import 'todo_screen.dart';
 import 'ai_chat_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const AnalyticsScreen(),
     const TodoScreen(),
     const AiChatScreen(),
+    const ProfileScreen(),
   ];
 
   @override
@@ -25,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
         items: const [
@@ -35,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Tasks',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Coach'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
     );
