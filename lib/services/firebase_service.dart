@@ -129,33 +129,47 @@ class FirebaseService {
         );
   }
 
-  // Get incomplete tasks
+  // Get incomplete tasks (simplified query - sorting done in app)
   Stream<List<TaskModel>> getIncompleteTasks(String userId) {
     return _db
         .collection('tasks')
         .where('userId', isEqualTo: userId)
         .where('isCompleted', isEqualTo: false)
-        .orderBy('priority')
-        .orderBy('createdAt', descending: false)
         .snapshots()
-        .map(
-          (snapshot) =>
-              snapshot.docs.map((doc) => TaskModel.fromDoc(doc)).toList(),
-        );
+        .map((snapshot) {
+          final tasks = snapshot.docs
+              .map((doc) => TaskModel.fromDoc(doc))
+              .toList();
+          // Sort in app: by priority first, then by created date
+          tasks.sort((a, b) {
+            final priorityCompare = a.priority.compareTo(b.priority);
+            if (priorityCompare != 0) return priorityCompare;
+            return a.createdAt.compareTo(b.createdAt);
+          });
+          return tasks;
+        });
   }
 
-  // Get completed tasks
+  // Get completed tasks (simplified query - sorting done in app)
   Stream<List<TaskModel>> getCompletedTasks(String userId) {
     return _db
         .collection('tasks')
         .where('userId', isEqualTo: userId)
         .where('isCompleted', isEqualTo: true)
-        .orderBy('completedAt', descending: true)
         .snapshots()
-        .map(
-          (snapshot) =>
-              snapshot.docs.map((doc) => TaskModel.fromDoc(doc)).toList(),
-        );
+        .map((snapshot) {
+          final tasks = snapshot.docs
+              .map((doc) => TaskModel.fromDoc(doc))
+              .toList();
+          // Sort by completion date (newest first)
+          tasks.sort((a, b) {
+            if (a.completedAt == null && b.completedAt == null) return 0;
+            if (a.completedAt == null) return 1;
+            if (b.completedAt == null) return -1;
+            return b.completedAt!.compareTo(a.completedAt!);
+          });
+          return tasks;
+        });
   }
 
   // Toggle task completion
