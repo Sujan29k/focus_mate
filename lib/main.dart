@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'screens/home_screen.dart';
-import 'screens/auth/login_screen.dart';
+import 'screens/welcome_screen.dart';
 import 'services/auth_service.dart';
 import 'firebase_options.dart';
 
@@ -53,8 +53,8 @@ class AuthWrapper extends StatelessWidget {
           return const HomeScreen();
         }
 
-        // If user is not signed in, show login screen
-        return const LoginScreen();
+        // If user is not signed in, show welcome screen
+        return const WelcomeScreen();
       },
     );
   }
