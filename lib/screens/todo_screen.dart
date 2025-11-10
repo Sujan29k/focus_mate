@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../services/firebase_service.dart';
+import '../services/notification_service.dart';
 import '../models/task_model.dart';
 
 class TodoScreen extends StatefulWidget {
@@ -38,7 +39,26 @@ class _TodoScreenState extends State<TodoScreen> {
         dueDate: _selectedDueDate,
       );
 
-      await _firebaseService.addTask(task);
+      // Add to Firebase and get the task ID
+      final taskId = await _firebaseService.addTask(task);
+
+      // Schedule notification if due date/time is set
+      if (_selectedDueDate != null && task.hasTimeSet) {
+        // Create a new task instance with the actual ID from Firestore
+        final notifiableTask = TaskModel(
+          id: taskId,
+          userId: task.userId,
+          title: task.title,
+          description: task.description,
+          isCompleted: task.isCompleted,
+          createdAt: task.createdAt,
+          completedAt: task.completedAt,
+          dueDate: task.dueDate,
+          priority: task.priority,
+        );
+        await NotificationService.scheduleTaskNotification(notifiableTask);
+      }
+
       _controller.clear();
       setState(() {
         _selectedPriority = 2; // Reset to medium
@@ -47,7 +67,13 @@ class _TodoScreenState extends State<TodoScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Task added successfully')),
+          SnackBar(
+            content: Text(
+              _selectedDueDate != null && task.hasTimeSet
+                  ? 'Task added with reminder!'
+                  : 'Task added successfully',
+            ),
+          ),
         );
       }
     } catch (e) {
@@ -107,6 +133,14 @@ class _TodoScreenState extends State<TodoScreen> {
   void _toggleTaskCompletion(TaskModel task) async {
     try {
       await _firebaseService.toggleTaskCompletion(task.id, !task.isCompleted);
+
+      // Cancel notification if completing the task
+      if (!task.isCompleted) {
+        await NotificationService.cancelTaskNotification(task.id);
+      } else if (task.dueDate != null && task.hasTimeSet) {
+        // Re-schedule notification if uncompleting and has due time
+        await NotificationService.scheduleTaskNotification(task);
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -119,6 +153,10 @@ class _TodoScreenState extends State<TodoScreen> {
   void _deleteTask(String taskId) async {
     try {
       await _firebaseService.deleteTask(taskId);
+
+      // Cancel scheduled notification
+      await NotificationService.cancelTaskNotification(taskId);
+
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -175,6 +213,22 @@ class _TodoScreenState extends State<TodoScreen> {
       appBar: AppBar(
         title: const Text('My Tasks'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () async {
+              // Test notification
+              await NotificationService.showImmediateNotification(
+                'Test Notification 🔔',
+                'This is how task reminders will look!',
+              );
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Test notification sent!')),
+                );
+              }
+            },
+            tooltip: 'Test Notification',
+          ),
           IconButton(
             icon: const Icon(Icons.info_outline),
             onPressed: () {
