@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "752882152849-ms7123eurp6ncrnekk9r50j1hu0jq3g0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.focusmate",
+            "certificate_hash": "ad1cb925e0c736b4c8d90be3a8142585c149ad57"
+          }
+        },
+        {
           "client_id": "752882152849-gpfg3glklqsukevhi70ehe96d6ec8krd.apps.googleusercontent.com",
           "client_type": 3
         }
