@@ -31,6 +31,12 @@ class _FocusTimerScreenState extends State<FocusTimerScreen> {
   }
 
   @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final minutes = (_seconds ~/ 60).toString().padLeft(2, '0');
     final seconds = (_seconds % 60).toString().padLeft(2, '0');
