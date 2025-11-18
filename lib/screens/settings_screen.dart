@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
+import '../services/biometric_service.dart';
 import 'auth/login_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -11,6 +13,36 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final _authService = AuthService();
+  final _biometricService = BiometricService();
+  bool _biometricEnabled = false;
+  bool _biometricSupported = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBiometricSettings();
+  }
+
+  Future<void> _loadBiometricSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    final supported = await _biometricService.isSupported();
+    final hasEnrolled = await _biometricService.hasEnrolledBiometrics();
+    final available = await _biometricService.getAvailableBiometrics();
+
+    // Debug info
+    print('=== Biometric Debug ===');
+    print('Device supported: $supported');
+    print('Has enrolled: $hasEnrolled');
+    print('Available types: $available');
+    print('=====================');
+
+    if (mounted) {
+      setState(() {
+        _biometricSupported = supported && hasEnrolled;
+        _biometricEnabled = prefs.getBool('use_biometrics') ?? false;
+      });
+    }
+  }
 
   Future<void> _handleSignOut() async {
     final confirmed = await showDialog<bool>(
@@ -94,19 +126,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           // Security
           _buildSectionHeader('Security'),
-          _buildSettingsTile(
-            icon: Icons.fingerprint,
-            title: 'Biometric Authentication',
-            subtitle: 'Use fingerprint or Face ID',
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Biometric settings - Coming soon!'),
-                ),
-              );
-            },
-          ),
+          _buildBiometricTile(),
           _buildSettingsTile(
             icon: Icons.lock,
             title: 'Change Password',
@@ -226,6 +246,94 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           const SizedBox(height: 24),
         ],
+      ),
+    );
+  }
+
+  Future<void> _toggleBiometric(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    if (value) {
+      // Enabling biometrics - authenticate first
+      if (!_biometricSupported) {
+        if (mounted) {
+          final available = await _biometricService.getAvailableBiometrics();
+          final message = available.isEmpty
+              ? 'Please enroll Face ID or Touch ID in Settings first'
+              : 'Biometric authentication is not available';
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message),
+              backgroundColor: Colors.orange,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+        return;
+      }
+
+      final authenticated = await _biometricService.authenticate(
+        reason: 'Authenticate to enable biometric login',
+      );
+
+      if (authenticated) {
+        await prefs.setBool('use_biometrics', true);
+        if (mounted) {
+          setState(() => _biometricEnabled = true);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Biometric authentication enabled'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Authentication failed'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } else {
+      // Disabling biometrics
+      await prefs.setBool('use_biometrics', false);
+      if (mounted) {
+        setState(() => _biometricEnabled = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Biometric authentication disabled')),
+        );
+      }
+    }
+  }
+
+  Widget _buildBiometricTile() {
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.teal.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: const Icon(Icons.fingerprint, color: Colors.teal, size: 24),
+      ),
+      title: const Text(
+        'Biometric Authentication',
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+      ),
+      subtitle: Text(
+        _biometricSupported
+            ? 'Use fingerprint or Face ID'
+            : 'Not available on this device',
+        style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+      ),
+      trailing: Switch(
+        value: _biometricEnabled,
+        onChanged: _biometricSupported ? _toggleBiometric : null,
+        activeColor: Colors.teal,
       ),
     );
   }

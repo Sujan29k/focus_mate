@@ -1,3 +1,12 @@
-using indexed stack so that the state of one screens remans still even if the screen is changed 
+using indexed stack so that the state of one screens remans still even if the screen is changed (changes made in homescreen )
+_formKey= it helps in validating all the items in the form including name email and other 
+_emailcontroller= give u access to the email string to send to firebase 
+
+
+local_auth(library)=used for  biometric authenticaton
+
+<key>NSFaceIDUsageDescription</key>
+<string>This app uses Face ID for authentication.</string>(added this in info.plist for ios faceid support) 
+
 
 
