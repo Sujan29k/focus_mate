@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import '../utils/theme.dart';
 
 class FocusTimerScreen extends StatefulWidget {
   const FocusTimerScreen({super.key});
@@ -35,15 +36,32 @@ class _FocusTimerScreenState extends State<FocusTimerScreen> {
     final seconds = (_seconds % 60).toString().padLeft(2, '0');
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Focus Timer')),
+      appBar: AppBar(title: const Text('Focus Timer'), centerTitle: true),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('$minutes:$seconds', style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 20),
+            Text(
+              '$minutes:$seconds',
+              style: AppTextStyles.h1.copyWith(
+                fontSize: 72,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(height: 32),
             ElevatedButton(
               onPressed: _toggleTimer,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _isRunning
+                    ? AppColors.warning
+                    : AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 48,
+                  vertical: 16,
+                ),
+                textStyle: AppTextStyles.button,
+              ),
               child: Text(_isRunning ? 'Pause' : 'Start'),
             ),
           ],

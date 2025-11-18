@@ -4,6 +4,7 @@ import 'screens/home_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'services/auth_service.dart';
 import 'services/notification_service.dart';
+import 'utils/theme.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -27,11 +28,7 @@ class FocusMateApp extends StatelessWidget {
     return MaterialApp(
       title: 'FocusMate',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-        textTheme: Theme.of(context).textTheme.apply(fontFamily: 'Roboto'),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
       home: const AuthWrapper(),
     );
   }

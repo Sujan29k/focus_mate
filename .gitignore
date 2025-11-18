@@ -43,3 +43,19 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# VS Code application files (should never be in project)
+*.app
+*.zip
+**/Visual Studio Code.app/
+**/VSCode-darwin-universal.zip
+
+# iOS Pods
+/ios/Pods/
+/ios/.symlinks/
+/ios/Flutter/Flutter.framework
+/ios/Flutter/Flutter.podspec
+
+# Build folders
+/build/
+**/build/
