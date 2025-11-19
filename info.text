@@ -11,5 +11,5 @@ local_auth(library)=used for  biometric authenticaton
 that checks if the device supports biometric authenticatin service and saves a local flaga use_biometrics=true in sharedPreferences(per-device )
 
 flutter_secure_storage is required to store the user credentials securily 
-
+secure_storage_service.dart is used to manage the storage email and user credentials and then use faceid for authentication 
 
