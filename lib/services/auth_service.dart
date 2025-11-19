@@ -68,6 +68,37 @@ class AuthService {
     }
   }
 
+  // Silent Google Sign-In (for biometric unlock)
+  Future<User?> signInWithGoogleSilently() async {
+    try {
+      // Try to sign in silently (uses cached credentials)
+      final GoogleSignInAccount? googleUser = await _googleSignIn
+          .signInSilently();
+
+      if (googleUser == null) {
+        // No cached sign-in available
+        return null;
+      }
+
+      // Obtain auth details
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      // Create credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Sign in to Firebase
+      final userCredential = await _auth.signInWithCredential(credential);
+      return userCredential.user;
+    } catch (e) {
+      // Silent sign-in failed
+      return null;
+    }
+  }
+
   // Sign out
   Future<void> signOut() async {
     await _auth.signOut();

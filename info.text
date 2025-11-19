@@ -8,5 +8,8 @@ local_auth(library)=used for  biometric authenticaton
 <key>NSFaceIDUsageDescription</key>
 <string>This app uses Face ID for authentication.</string>(added this in info.plist for ios faceid support) 
 
+that checks if the device supports biometric authenticatin service and saves a local flaga use_biometrics=true in sharedPreferences(per-device )
+
+flutter_secure_storage is required to store the user credentials securily 
 
 

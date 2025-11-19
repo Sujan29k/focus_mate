@@ -32,8 +32,11 @@ class BiometricService {
         return false;
       }
 
-      // Perform authentication
-      return await _auth.authenticate(localizedReason: reason);
+      // Perform authentication (biometric-only)
+      return await _auth.authenticate(
+        localizedReason: reason,
+        biometricOnly: true,
+      );
     } on PlatformException {
       // Handle platform-specific errors
       return false;

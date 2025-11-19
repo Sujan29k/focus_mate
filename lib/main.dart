@@ -6,6 +6,8 @@ import 'services/auth_service.dart';
 import 'services/notification_service.dart';
 import 'utils/theme.dart';
 import 'firebase_options.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'screens/auth/lock_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,13 +54,42 @@ class AuthWrapper extends StatelessWidget {
           );
         }
 
-        // If user is signed in, show home screen
+        // If user is signed in, decide whether to lock
         if (snapshot.hasData) {
-          return const HomeScreen();
+          return const PostSignInGate();
         }
 
         // If user is not signed in, show welcome screen
         return const WelcomeScreen();
+      },
+    );
+  }
+}
+
+/// Decides whether to show LockScreen or Home based on local preference
+class PostSignInGate extends StatelessWidget {
+  const PostSignInGate({super.key});
+
+  Future<bool> _shouldLock() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('use_biometrics') ?? false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: _shouldLock(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        final lock = snapshot.data ?? false;
+        if (lock) {
+          return const LockScreen();
+        }
+        return const HomeScreen();
       },
     );
   }
