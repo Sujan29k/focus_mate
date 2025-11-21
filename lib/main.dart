@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart'; // ADD THIS
 import 'screens/home_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'services/auth_service.dart';
@@ -8,6 +9,7 @@ import 'utils/theme.dart';
 import 'firebase_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/auth/lock_screen.dart';
+import 'providers/theme_provider.dart'; // ADD THIS
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +21,13 @@ void main() async {
   await NotificationService.initialize();
   await NotificationService.requestPermissions();
 
-  runApp(const FocusMateApp());
+  runApp(
+    // WRAP WITH PROVIDER
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: const FocusMateApp(),
+    ),
+  );
 }
 
 class FocusMateApp extends StatelessWidget {
@@ -27,16 +35,23 @@ class FocusMateApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'FocusMate',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      home: const AuthWrapper(),
+    return Consumer<ThemeProvider>(
+      // ← Make sure this is here
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: themeProvider.themeMode, // ← Dynamic theme mode
+          title: 'FocusMate',
+          debugShowCheckedModeBanner: false,
+          home: const AuthWrapper(),
+        );
+      },
     );
   }
 }
 
-/// Wrapper to handle authentication state
+// Keep AuthWrapper and PostSignInGate as-is
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
 
@@ -47,26 +62,22 @@ class AuthWrapper extends StatelessWidget {
     return StreamBuilder(
       stream: authService.authStateChanges,
       builder: (context, snapshot) {
-        // Show loading while checking auth state
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
 
-        // If user is signed in, decide whether to lock
         if (snapshot.hasData) {
           return const PostSignInGate();
         }
 
-        // If user is not signed in, show welcome screen
         return const WelcomeScreen();
       },
     );
   }
 }
 
-/// Decides whether to show LockScreen or Home based on local preference
 class PostSignInGate extends StatelessWidget {
   const PostSignInGate({super.key});
 

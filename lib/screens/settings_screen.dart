@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
 import '../services/biometric_service.dart';
 import 'auth/login_screen.dart';
+import '../providers/theme_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -164,13 +166,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _buildSettingsTile(
             icon: Icons.dark_mode,
             title: 'Theme',
-            subtitle: 'Light, Dark, or System',
+            subtitle: _getThemeName(context), // CHANGED
             trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Theme settings - Coming soon!')),
-              );
-            },
+            onTap: () => _showThemeDialog(context), // CHANGED
           ),
 
           const Divider(),
@@ -380,6 +378,67 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       trailing: trailing,
       onTap: onTap,
+    );
+  }
+
+  String _getThemeName(BuildContext context) {
+    final mode = Provider.of<ThemeProvider>(context).themeMode;
+    switch (mode) {
+      case ThemeMode.light:
+        return 'Light';
+      case ThemeMode.dark:
+        return 'Dark';
+      case ThemeMode.system:
+        return 'System';
+    }
+  }
+
+  Future<void> _showThemeDialog(BuildContext context) async {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+
+    await showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text('Choose Theme'),
+        children: [
+          _buildThemeOption(context, 'Light', ThemeMode.light, themeProvider),
+          _buildThemeOption(context, 'Dark', ThemeMode.dark, themeProvider),
+          _buildThemeOption(context, 'System', ThemeMode.system, themeProvider),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildThemeOption(
+    BuildContext context,
+    String label,
+    ThemeMode mode,
+    ThemeProvider provider,
+  ) {
+    final isSelected = provider.themeMode == mode;
+
+    return SimpleDialogOption(
+      onPressed: () {
+        provider.setTheme(mode);
+        Navigator.pop(context);
+      },
+      child: Row(
+        children: [
+          Icon(
+            isSelected
+                ? Icons.radio_button_checked
+                : Icons.radio_button_unchecked,
+            color: isSelected ? Theme.of(context).primaryColor : Colors.grey,
+          ),
+          const SizedBox(width: 12),
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
