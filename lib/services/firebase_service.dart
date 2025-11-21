@@ -179,4 +179,43 @@ class FirebaseService {
       'completedAt': isCompleted ? DateTime.now().toIso8601String() : null,
     });
   }
+
+  // Get tasks by category
+  Stream<List<TaskModel>> getTasksByCategory(String userId, String category) {
+    return _db
+        .collection('tasks')
+        .where('userId', isEqualTo: userId)
+        .where('category', isEqualTo: category)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => TaskModel.fromDoc(doc)).toList(),
+        );
+  }
+
+  // Get incomplete tasks by category
+  Stream<List<TaskModel>> getIncompleteTasksByCategory(
+    String userId,
+    String category,
+  ) {
+    return _db
+        .collection('tasks')
+        .where('userId', isEqualTo: userId)
+        .where('isCompleted', isEqualTo: false)
+        .where('category', isEqualTo: category)
+        .snapshots()
+        .map((snapshot) {
+          final tasks = snapshot.docs
+              .map((doc) => TaskModel.fromDoc(doc))
+              .toList();
+          // Sort in app: by priority first, then by created date
+          tasks.sort((a, b) {
+            final priorityCompare = a.priority.compareTo(b.priority);
+            if (priorityCompare != 0) return priorityCompare;
+            return a.createdAt.compareTo(b.createdAt);
+          });
+          return tasks;
+        });
+  }
 }

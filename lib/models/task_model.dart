@@ -10,6 +10,7 @@ class TaskModel {
   final DateTime? completedAt;
   final DateTime? dueDate;
   final int priority; // 1-High, 2-Medium, 3-Low
+  final String category;
 
   TaskModel({
     required this.id,
@@ -21,6 +22,7 @@ class TaskModel {
     this.completedAt,
     this.dueDate,
     this.priority = 2,
+    this.category = 'Personal',
   });
 
   // Convert to Map for Firestore
@@ -34,6 +36,7 @@ class TaskModel {
       'completedAt': completedAt?.toIso8601String(),
       'dueDate': dueDate?.toIso8601String(),
       'priority': priority,
+      'category': category,
     };
   }
 
@@ -54,6 +57,7 @@ class TaskModel {
           : null,
       dueDate: data['dueDate'] != null ? DateTime.parse(data['dueDate']) : null,
       priority: data['priority'] ?? 2,
+      category: data['category'] ?? 'Personal',
     );
   }
 
@@ -65,6 +69,7 @@ class TaskModel {
     DateTime? completedAt,
     DateTime? dueDate,
     int? priority,
+    String? category,
   }) {
     return TaskModel(
       id: id,
@@ -76,6 +81,7 @@ class TaskModel {
       completedAt: completedAt ?? this.completedAt,
       dueDate: dueDate ?? this.dueDate,
       priority: priority ?? this.priority,
+      category: category ?? this.category,
     );
   }
 
