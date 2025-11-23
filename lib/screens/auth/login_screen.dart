@@ -65,14 +65,20 @@ class _LoginScreenState extends State<LoginScreen> {
       final user = await _authService.signInWithGoogle();
 
       if (user != null) {
-        // Create user profile in Firestore if it doesn't exist
-        final userProfile = UserModel(
-          uid: user.uid,
-          email: user.email!,
-          displayName: user.displayName,
-          createdAt: DateTime.now(),
-        );
-        await _firebaseService.createUserProfile(userProfile);
+        // Check if user profile exists
+        final existingProfile = await _firebaseService.getUserProfile(user.uid);
+
+        if (existingProfile == null) {
+          // Create user profile with Google photo
+          final userProfile = UserModel(
+            uid: user.uid,
+            email: user.email!,
+            displayName: user.displayName,
+            photoURL: user.photoURL, // Get photo from Google account
+            createdAt: DateTime.now(),
+          );
+          await _firebaseService.createUserProfile(userProfile);
+        }
 
         if (mounted) {
           Navigator.of(context).pushReplacement(

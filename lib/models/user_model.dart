@@ -4,6 +4,7 @@ class UserModel {
   final String uid;
   final String email;
   final String? displayName;
+  final String? photoURL;
   final DateTime createdAt;
   final int totalFocusMinutes;
   final int totalSessions;
@@ -12,6 +13,7 @@ class UserModel {
     required this.uid,
     required this.email,
     this.displayName,
+    this.photoURL,
     required this.createdAt,
     this.totalFocusMinutes = 0,
     this.totalSessions = 0,
@@ -23,6 +25,7 @@ class UserModel {
       'uid': uid,
       'email': email,
       'displayName': displayName,
+      'photoURL': photoURL,
       'createdAt': createdAt.toIso8601String(),
       'totalFocusMinutes': totalFocusMinutes,
       'totalSessions': totalSessions,
@@ -36,6 +39,7 @@ class UserModel {
       uid: doc.id,
       email: data['email'] ?? '',
       displayName: data['displayName'],
+      photoURL: data['photoURL'],
       createdAt: DateTime.parse(
         data['createdAt'] ?? DateTime.now().toIso8601String(),
       ),
@@ -47,6 +51,7 @@ class UserModel {
   // Create copy with updated values
   UserModel copyWith({
     String? displayName,
+    String? photoURL,
     int? totalFocusMinutes,
     int? totalSessions,
   }) {
@@ -54,6 +59,7 @@ class UserModel {
       uid: uid,
       email: email,
       displayName: displayName ?? this.displayName,
+      photoURL: photoURL ?? this.photoURL,
       createdAt: createdAt,
       totalFocusMinutes: totalFocusMinutes ?? this.totalFocusMinutes,
       totalSessions: totalSessions ?? this.totalSessions,

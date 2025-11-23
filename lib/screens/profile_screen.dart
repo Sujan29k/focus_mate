@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../services/firebase_service.dart';
 import 'auth/login_screen.dart';
 import 'settings_screen.dart';
+import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -68,9 +70,31 @@ class ProfileScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(16),
                         child: Column(
                           children: [
-                            const CircleAvatar(
+                            CircleAvatar(
                               radius: 50,
-                              child: Icon(Icons.person, size: 50),
+                              backgroundImage:
+                                  userProfile?.photoURL != null &&
+                                      userProfile!.photoURL!.startsWith('http')
+                                  ? NetworkImage(userProfile.photoURL!)
+                                  : null,
+                              child: userProfile?.photoURL == null
+                                  ? const Icon(Icons.person, size: 50)
+                                  : (userProfile!.photoURL!.startsWith(
+                                          'data:image',
+                                        )
+                                        ? ClipOval(
+                                            child: Image.memory(
+                                              base64Decode(
+                                                userProfile.photoURL!.split(
+                                                  ',',
+                                                )[1],
+                                              ),
+                                              fit: BoxFit.cover,
+                                              width: 100,
+                                              height: 100,
+                                            ),
+                                          )
+                                        : null),
                             ),
                             const SizedBox(height: 16),
                             Text(
@@ -157,9 +181,11 @@ class ProfileScreen extends StatelessWidget {
                             title: const Text('Edit Profile'),
                             trailing: const Icon(Icons.chevron_right),
                             onTap: () {
-                              // TODO: Navigate to edit profile screen
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Coming soon!')),
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const EditProfileScreen(),
+                                ),
                               );
                             },
                           ),

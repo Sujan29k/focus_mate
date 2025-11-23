@@ -489,29 +489,62 @@ class _TodoScreenState extends State<TodoScreen> {
                 children: [
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: isDark ? Colors.black45 : Colors.black12,
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+                      color: isDark ? Colors.grey[850] : Colors.grey[200],
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: TabBar(
                       indicator: BoxDecoration(
                         color: Theme.of(context).primaryColor,
                         borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Theme.of(
+                              context,
+                            ).primaryColor.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       labelColor: Colors.white,
-                      unselectedLabelColor: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.color,
+                      unselectedLabelColor: isDark
+                          ? Colors.grey[400]
+                          : Colors.grey[700],
+                      labelStyle: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      unselectedLabelStyle: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      dividerColor: Colors.transparent,
                       tabs: const [
-                        Tab(text: 'Active'),
-                        Tab(text: 'Completed'),
+                        Tab(
+                          height: 44,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.pending_actions, size: 18),
+                              SizedBox(width: 6),
+                              Text('Active'),
+                            ],
+                          ),
+                        ),
+                        Tab(
+                          height: 44,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.task_alt, size: 18),
+                              SizedBox(width: 6),
+                              Text('Completed'),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
