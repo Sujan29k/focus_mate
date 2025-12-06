@@ -14,5 +14,10 @@ flutter_secure_storage is required to store the user credentials securily
 secure_storage_service.dart is used to manage the storage email and user credentials and then use faceid for authentication 
 
 profile ma image pani add gariyo saved image as base64 format (cause firease_storage ) use garna ko lagi hamle payment method integrate garnu  parne raixa so ( base64 ma encode and deode garnu parxa )        
-user image_picker for picking images from gallery/camera 
+used image_picker for picking images from gallery/camera
+
+i have created idea to track which application user is currently wathching but due to ios privacy policy we cannot add that feature but we can just access screentime permission and for that native swift code is needed to write and only for ios application 
+
+
+
 

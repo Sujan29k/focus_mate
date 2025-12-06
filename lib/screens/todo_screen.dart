@@ -423,22 +423,6 @@ class _TodoScreenState extends State<TodoScreen> {
                     color: Theme.of(context).textTheme.titleLarge?.color,
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.notifications_outlined, size: 28),
-                  onPressed: () async {
-                    await NotificationService.showImmediateNotification(
-                      'Test Notification 🔔',
-                      'This is how task reminders will look!',
-                    );
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Test notification sent!'),
-                        ),
-                      );
-                    }
-                  },
-                ),
               ],
             ),
           ),
